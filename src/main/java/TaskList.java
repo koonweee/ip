@@ -1,11 +1,15 @@
-import java.io.*;
+import java.io.IOException;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class TaskList {
     //abstract the arraylist access and parsing of file
-    ArrayList<Task> taskList;
+    private ArrayList<Task> taskList;
 
     TaskList(File file) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(file));
@@ -59,11 +63,15 @@ public class TaskList {
     @Override
     public String toString() {
         String rtn = taskList.stream().map(task -> task.toString()).collect(Collectors.joining("\n"));
-        String[] rtnSplit = rtn.split("\n");
-        for (int i = 0; i <  rtnSplit.length; i++) {
-            rtnSplit[i] = (i + 1) + ". "+ rtnSplit[i];
+        if (!rtn.equals("")) {
+            String[] rtnSplit = rtn.split("\n");
+            for (int i = 0; i < rtnSplit.length; i++) {
+                rtnSplit[i] = (i + 1) + ". " + rtnSplit[i];
+            }
+            return Arrays.asList(rtnSplit).stream().collect(Collectors.joining("\n"));
+        } else {
+            return "";
         }
-        return Arrays.asList(rtnSplit).stream().collect(Collectors.joining("\n"));
     }
 
     public String find(String key) {
@@ -72,9 +80,13 @@ public class TaskList {
                 .filter(task -> task.contains(key))
                 .collect(Collectors.joining("\n"));
         String[] rtnSplit = rtn.split("\n");
-        for (int i = 0; i <  rtnSplit.length; i++) {
-            rtnSplit[i] = (i + 1) + ". "+ rtnSplit[i];
+        for (int i = 0; i < rtnSplit.length; i++) {
+            rtnSplit[i] = (i + 1) + ". " + rtnSplit[i];
         }
         return Arrays.asList(rtnSplit).stream().collect(Collectors.joining("\n"));
+    }
+
+    public ArrayList<Task> getTasks() {
+        return this.taskList;
     }
 }
