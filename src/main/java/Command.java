@@ -61,7 +61,7 @@ abstract class Command {
      * @throws IOException may be thrown while saving to storage
      */
 
-    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws IOException;
+    public abstract String execute(TaskList tasks, Ui ui, Storage storage) throws IOException;
 
     /**
      * Returns if the command is supposed to cause an exit from UI
@@ -82,8 +82,8 @@ class ExitCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
-
+    public String execute(TaskList tasks, Ui ui, Storage storage) {
+        return "Duke is exiting, goodbye!";
     }
 }
 
@@ -92,8 +92,8 @@ class ExitCommand extends Command {
  */
 class ListCommand extends Command {
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
-        ui.printf("Here are the tasks in your list:\n" + tasks.toString());
+    public String execute(TaskList tasks, Ui ui, Storage storage) {
+        return ui.printf("Here are the tasks in your list:\n" + tasks.toString());
     }
 }
 
@@ -109,10 +109,10 @@ class DoneCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+    public String execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         tasks.done(this.doneTask);
-        ui.printf("Nice! I've marked this task as done:\n" + tasks.get(this.doneTask));
         storage.saveFile(tasks);
+        return ui.printf("Nice! I've marked this task as done:\n" + tasks.get(this.doneTask));
     }
 }
 
@@ -128,11 +128,11 @@ class DeleteCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
-        ui.printf("Noted. I've removed this task:\n" + tasks.get(this.deleteTask));
+    public String execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+        String taskString = tasks.get(this.deleteTask).toString();
         tasks.delete(this.deleteTask);
         storage.saveFile(tasks);
-        ui.printf(tasks.taskCount());
+        return ui.printf("Noted. I've removed this task:\n" + taskString + "\n" + tasks.taskCount());
     }
 }
 
@@ -147,11 +147,10 @@ class TodoCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+    public String execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         Task task = tasks.addTodo(this.task);
-        ui.printf("Got it. I've added this task:\n" + task.toString());
-        ui.printf(tasks.taskCount());
         storage.saveFile(tasks);
+        return ui.printf("Got it. I've added this task:\n" + task.toString() + "\n" + tasks.taskCount());
     }
 }
 
@@ -169,11 +168,10 @@ class DeadlineCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+    public String execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         Task task = tasks.addDeadline(this.task, this.deadline);
-        ui.printf("Got it. I've added this task:\n" + task);
-        ui.printf(tasks.taskCount());
         storage.saveFile(tasks);
+        return ui.printf("Got it. I've added this task:\n" + task + "\n" + tasks.taskCount());
     }
 }
 
@@ -190,11 +188,10 @@ class EventCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+    public String execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         Task task = tasks.addEvent(this.task, this.at);
-        ui.printf("Got it. I've added this task:\n" + task);
-        ui.printf(tasks.taskCount());
         storage.saveFile(tasks);
+        return ui.printf("Got it. I've added this task:\n" + task + "\n" + tasks.taskCount());
     }
 }
 
@@ -206,8 +203,7 @@ class FindCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
-        ui.printf("Here are the matching tasks in your list:\n");
-        ui.printf(tasks.find(this.key));
+    public String execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+        return ui.printf("Here are the matching tasks in your list:\n" + tasks.find(this.key));
     }
 }
